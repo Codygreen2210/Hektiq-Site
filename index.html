@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hektiq — Website Accessibility Audits</title>
+<meta name="description" content="Independent website accessibility audits for Louisiana businesses. Evidence, not guesswork.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FFFFFF;
+    --paper-dim:#F8FAFC;
+    --ink:#0D1B2A;
+    --ink-deep:#07111F;
+    --text:#0D1B2A;
+    --slate:#334155;
+    --signal:#27C2A5;
+    --signal-dim:#1FA890;
+    --signal-tint:#E4F7F3;
+    --purple:#6C63FF;
+    --critical:#DC2626;
+    --critical-bg:#FCE8E7;
+    --success:#16A34A;
+    --success-bg:#E6F4EA;
+    --warn:#F59E0B;
+    --warn-bg:#FDF1DC;
+    --line:#E2E8F0;
+    --white:#FFFFFF;
+    --radius:3px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+  body{
+    margin:0;background:var(--paper);color:var(--text);
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    font-size:16px;line-height:1.6;
+  }
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+  .mini-stats-tri{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px;}
+  .mini-stats-tri .tri-top{grid-column:1/-1;max-width:360px;margin:0 auto;}
+  .src-link{color:inherit;text-decoration:underline;text-decoration-color:currentColor;text-underline-offset:2px;}
+  .src-link:hover{opacity:0.8;}
+
+  a{color:var(--ink);}
+  a:focus-visible, button:focus-visible, .btn:focus-visible{
+    outline:3px solid var(--signal-dim);outline-offset:2px;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
+  .rule{border:none;border-top:1px solid var(--line);margin:0;}
+  .eyebrow{
+    font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:600;
+    color:var(--signal-dim);margin:0 0 10px;
+  }
+
+  /* ---------- HEADER ---------- */
+  header{padding:26px 0 0;}
+  .brand{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;}
+  .brand-name{font-weight:800;font-size:20px;letter-spacing:-0.01em;color:var(--ink-deep);}
+  .brand-name span{color:var(--signal);}
+  .brand-contact{font-size:14px;color:var(--slate);}
+  .brand-contact a{color:var(--slate);text-decoration:none;border-bottom:1px solid var(--line);}
+  .brand-contact a:hover{color:var(--ink);border-color:var(--ink);}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:54px 0 48px;}
+  .hero-grid{display:grid;grid-template-columns:1fr;gap:36px;}
+  @media (min-width:800px){ .hero-grid{grid-template-columns:1.05fr 0.95fr;align-items:start;gap:44px;} }
+  h1{
+    font-weight:900;font-size:clamp(32px,5vw,46px);
+    line-height:1.06;letter-spacing:-0.02em;margin:0 0 18px;color:var(--ink-deep);
+  }
+  .lede{font-size:18px;line-height:1.55;color:var(--text);margin:0 0 22px;max-width:52ch;}
+  .cta-row{display:flex;flex-wrap:wrap;gap:12px;}
+  .btn{
+    display:inline-block;padding:14px 22px;font-size:15px;font-weight:700;
+    border-radius:6px;text-decoration:none;font-family:inherit;
+    border:1.5px solid transparent;cursor:pointer;transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn-primary{background:var(--ink-deep);color:var(--white);}
+  .btn-primary:hover{background:var(--ink);transform:translateY(-1px);box-shadow:0 6px 16px rgba(7,17,31,.18);}
+  .btn-signal{background:var(--signal);color:var(--ink-deep);}
+  .btn-signal:hover{background:var(--signal-dim);color:var(--white);transform:translateY(-1px);box-shadow:0 6px 18px rgba(39,194,165,.35);}
+  .btn-ghost{background:transparent;color:var(--ink-deep);border-color:var(--ink-deep);}
+  .btn-ghost:hover{background:var(--paper-dim);}
+
+  /* ---------- hero mock report doc ---------- */
+  .doc{
+    border:1px solid var(--line);background:var(--white);border-radius:10px;
+    overflow:hidden;box-shadow:0 20px 44px rgba(13,27,42,.10);
+    transform:rotate(0.6deg);
+  }
+  .doc-bar{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:12px 16px;border-bottom:1px solid var(--line);background:var(--ink-deep);
+  }
+  .doc-bar-title{color:#fff;font-size:12.5px;font-weight:700;letter-spacing:.01em;}
+  .doc-bar-badge{
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:600;
+    color:var(--signal);background:rgba(39,194,165,.14);
+    padding:3px 8px;border-radius:20px;
+  }
+  .doc-body{padding:18px 18px 20px;}
+  .doc-row{
+    display:flex;gap:10px;align-items:flex-start;
+    padding:11px 0;border-bottom:1px solid var(--line);
+  }
+  .doc-row:last-child{border-bottom:none;padding-bottom:0;}
+  .sev{
+    font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:700;
+    padding:3px 7px;border-radius:4px;white-space:nowrap;margin-top:1px;letter-spacing:.02em;
+  }
+  .sev-crit{background:var(--critical-bg);color:var(--critical);}
+  .sev-high{background:var(--warn-bg);color:#B45309;}
+  .sev-pass{background:var(--success-bg);color:var(--success);}
+  .doc-txt{font-size:13.5px;line-height:1.45;}
+  .doc-txt b{display:block;font-size:13.5px;margin-bottom:2px;color:var(--ink-deep);}
+  .doc-txt .crit-line{color:var(--slate);font-size:12.5px;font-family:"JetBrains Mono",monospace;}
+  .doc-foot{
+    padding:12px 16px;background:var(--paper-dim);border-top:1px solid var(--line);
+    font-size:11.5px;color:var(--slate);display:flex;justify-content:space-between;
+  }
+  .doc-2{
+    display:none;
+  }
+  @media (min-width:800px){
+    .doc-2{
+      display:block;position:absolute;top:34px;left:34px;width:100%;
+      transform:rotate(-2deg);opacity:.45;filter:saturate(.6);z-index:-1;
+    }
+    .doc-stack{position:relative;}
+  }
+
+  /* ---------- SECTION SCAFFOLD ---------- */
+  section{padding:52px 0;}
+  h2{font-weight:800;font-size:28px;letter-spacing:-0.01em;color:var(--ink-deep);margin:0 0 14px;}
+  p{margin:0 0 14px;max-width:66ch;}
+  .lead-p{font-size:16.5px;color:var(--text);}
+
+  /* ---------- DARK band ---------- */
+  .band-dark{background:var(--ink-deep);color:#fff;}
+  .band-dark h2{color:#fff;}
+  .band-dark p{color:#C7D3DD;}
+  .band-dark .eyebrow{color:var(--signal);}
+
+  /* ---------- DONUTS ---------- */
+  .donuts{display:grid;grid-template-columns:1fr;gap:20px;margin-top:26px;}
+  @media (min-width:700px){ .donuts{grid-template-columns:1fr 1fr;} }
+  .donut-card{
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);
+    border-radius:14px;padding:24px 22px;display:flex;gap:20px;align-items:center;
+  }
+  .donut-ring{flex:none;}
+  .donut-num{font-weight:800;font-size:15px;color:#fff;position:relative;}
+  .donut-center{
+    position:relative;width:112px;height:112px;display:flex;align-items:center;justify-content:center;
+  }
+  .donut-center .num{
+    position:absolute;font-weight:800;font-size:22px;color:#fff;
+  }
+  .donut-text{font-size:14px;color:#C7D3DD;line-height:1.5;}
+  .donut-text b{color:#fff;}
+  .mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px;}
+  .mini-stat{
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);
+    border-radius:10px;padding:14px 16px;
+  }
+  .mini-stat .n{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:20px;color:var(--signal);}
+  .mini-stat .t{font-size:12.5px;color:#C7D3DD;margin-top:4px;}
+
+  /* ---------- TREND LINE (population growth) ---------- */
+  .trend-wrap{margin-top:30px;}
+  .trend-note{font-size:13px;color:#8FA1B2;margin-top:10px;}
+
+  /* ---------- LAWSUIT BAR CHART (light) ---------- */
+  .lawsuit-panel{
+    border:1px solid var(--line);border-radius:14px;background:var(--white);
+    padding:26px 22px 18px;margin-top:24px;
+  }
+  .bar-caption{font-size:11px;font-family:"JetBrains Mono",monospace;fill:var(--slate);}
+
+  .hr-grid{display:grid;grid-template-columns:1fr;gap:28px;margin-top:24px;}
+  @media (min-width:760px){ .hr-grid{grid-template-columns:1fr 1fr;} }
+  .coverage{
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--white);
+  }
+  .coverage-row{
+    display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;
+    padding:13px 16px;border-bottom:1px solid var(--line);
+  }
+  .coverage-row:last-child{border-bottom:none;}
+  .coverage-row .lbl{font-size:13.5px;color:var(--text);}
+  .coverage-row .track{
+    position:relative;height:8px;border-radius:5px;background:var(--paper-dim);
+    grid-column:1/-1;overflow:hidden;margin-top:-4px;
+  }
+  .coverage-row .fill{position:absolute;left:0;top:0;height:100%;border-radius:5px;background:var(--signal);}
+  .coverage-row .pct{font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:700;color:var(--signal-dim);}
+
+  /* ---------- REPORT SAMPLES ---------- */
+  .samples{display:grid;grid-template-columns:1fr;gap:16px;margin-top:8px;}
+  @media (min-width:760px){ .samples{grid-template-columns:repeat(3,1fr);} }
+  .sample-card{
+    background:var(--white);border:1px solid var(--line);border-radius:10px;
+    padding:18px 16px;
+  }
+  .sample-card .sev{margin-bottom:10px;display:inline-block;}
+  .sample-card h4{font-size:14.5px;margin:0 0 6px;color:var(--ink-deep);font-weight:700;}
+  .sample-card p{font-size:13px;color:var(--slate);margin:0 0 10px;}
+  .sample-card .fix{
+    font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--signal-dim);
+    background:var(--signal-tint);border-radius:6px;padding:8px 10px;
+  }
+
+  /* ---------- CARDS (services) ---------- */
+  .cards{display:grid;grid-template-columns:1fr;gap:16px;margin-top:8px;}
+  @media (min-width:700px){.cards{grid-template-columns:1fr 1fr;}}
+  .card{
+    background:var(--white);border:1px solid var(--line);border-radius:12px;
+    border-top:3px solid var(--signal);padding:24px 22px;
+  }
+  .card h3{font-size:18px;font-weight:700;margin:0 0 4px;color:var(--ink-deep);}
+  .card .price{font-family:"JetBrains Mono",monospace;font-size:14px;color:var(--slate);margin-bottom:12px;}
+  .card ul{margin:0;padding-left:18px;font-size:14px;}
+  .card li{margin-bottom:7px;}
+  .card li:last-child{margin-bottom:0;}
+
+  /* ---------- FOOTER ---------- */
+  footer{padding:0 0 56px;}
+  .foot-cta{
+    background:linear-gradient(160deg,var(--ink-deep) 0%, #0D2438 100%);
+    color:var(--white);padding:34px 28px;border-radius:14px;margin-bottom:26px;
+    position:relative;overflow:hidden;
+  }
+  .foot-cta::after{
+    content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;
+    background:radial-gradient(circle, rgba(39,194,165,.25), transparent 70%);
+  }
+  .foot-cta h2{color:#fff;font-size:22px;margin-bottom:8px;position:relative;}
+  .foot-cta p{color:#C7D3DD;max-width:60ch;margin:0 0 18px;font-size:15px;position:relative;}
+  .foot-meta{
+    display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;
+    font-size:13px;color:var(--slate);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <div class="brand-name">hektiq<span>.</span> accessibility</div>
+      <div class="brand-contact">
+        <a href="tel:+13183194561">(318) 319-4561</a> &nbsp;·&nbsp;
+        <a href="mailto:cody@hektiq.com">cody@hektiq.com</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">WEBSITE ACCESSIBILITY AUDITS</div>
+        <h1>Most websites fail their own customers, and nobody's told them yet.</h1>
+        <p class="lede">Send your URL. I'll find one real accessibility problem on your site — using a real screen reader, not just a scanner — and send your developer a fix for it the same day. No charge. It's a preview of what a full audit finds.</p>
+        <div class="cta-row">
+          <a class="btn btn-signal" href="mailto:cody@hektiq.com?subject=Find%20one%20issue%20on%20my%20site">Find my one issue, free</a>
+          <a class="btn btn-ghost" href="#work">See what a full audit covers</a>
+        </div>
+      </div>
+
+      <div class="doc-stack">
+        <div class="doc" role="img" aria-label="Sample page from an accessibility audit report">
+          <div class="doc-bar">
+            <span class="doc-bar-title">SAMPLE AUDIT — FINDINGS</span>
+            <span class="doc-bar-badge">WCAG 2.1 AA</span>
+          </div>
+          <div class="doc-body">
+            <div class="doc-row">
+              <span class="sev sev-crit">CRITICAL</span>
+              <div class="doc-txt">
+                <b>Card number field has no accessible name</b>
+                <span class="crit-line">4.1.2 · checkout/payment</span>
+              </div>
+            </div>
+            <div class="doc-row">
+              <span class="sev sev-high">HIGH</span>
+              <div class="doc-txt">
+                <b>Sort controls don't register with screen reader</b>
+                <span class="crit-line">4.1.2 · /collections/*</span>
+              </div>
+            </div>
+            <div class="doc-row">
+              <span class="sev sev-pass">PASS</span>
+              <div class="doc-txt">
+                <b>Product images carry real alt text</b>
+                <span class="crit-line">1.1.1 · site-wide</span>
+              </div>
+            </div>
+          </div>
+          <div class="doc-foot">
+            <span>3 of 14 findings shown</span>
+            <span>tested by hand, not a bot</span>
+          </div>
+        </div>
+        <div class="doc doc-2" aria-hidden="true">
+          <div class="doc-bar"><span class="doc-bar-title">SAMPLE AUDIT</span><span class="doc-bar-badge">AA</span></div>
+          <div class="doc-body">
+            <div class="doc-row"><span class="sev sev-high">HIGH</span><div class="doc-txt"><b>Contrast below 4.5:1</b></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="why" class="band-dark">
+    <div class="wrap">
+      <div class="eyebrow">WHO'S ACTUALLY SHOPPING</div>
+      <h2>70 million Americans are trying to buy from you. A lot of them are leaving.</h2>
+      <p class="lead-p">People with disabilities have moved online for the same reason everyone did — it's easier than fighting a physical store. But when the site itself is the barrier, they don't complain. They just leave, and go buy from whoever made it easy.</p>
+
+      <div class="trend-wrap" style="margin-top:8px;">
+        <svg viewBox="0 0 640 190" width="100%" height="190" role="img" aria-label="Number of U.S. civilians reporting a disability, American Community Survey: 2019, 41.2 million; 2021, 42.5 million; 2022, 44.1 million; 2023, 44.7 million; 2024, 45.8 million.">
+          <g id="trend"></g>
+        </svg>
+        <p class="trend-note">People with disabilities living in the U.S., by year — <a class="src-link" href="https://usafacts.org/answers/how-many-people-have-a-disability/country/united-states/" target="_blank" rel="noopener" style="color:#8FA1B2;">Census Bureau, American Community Survey</a>. 2024's count is the highest ever recorded, and it climbs again every year the Census measures it.</p>
+      </div>
+
+      <div class="donuts">
+        <div class="donut-card">
+          <div class="donut-center">
+            <svg class="donut-ring" width="112" height="112" viewBox="0 0 112 112" aria-hidden="true">
+              <circle cx="56" cy="56" r="46" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="12"/>
+              <circle class="ring-fill" data-pct="28.7" cx="56" cy="56" r="46" fill="none" stroke="#27C2A5" stroke-width="12"
+                stroke-linecap="round" transform="rotate(-90 56 56)"/>
+            </svg>
+            <span class="num">1 in 4</span>
+          </div>
+          <div class="donut-text"><b>70 million+ US adults</b> live with a disability — about 28.7% of the adult population, and rising as the population ages.</div>
+        </div>
+
+        <div class="donut-card">
+          <div class="donut-center">
+            <svg class="donut-ring" width="112" height="112" viewBox="0 0 112 112" aria-hidden="true">
+              <circle cx="56" cy="56" r="46" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="12"/>
+              <circle class="ring-fill" data-pct="69" cx="56" cy="56" r="46" fill="none" stroke="#27C2A5" stroke-width="12"
+                stroke-linecap="round" transform="rotate(-90 56 56)"/>
+            </svg>
+            <span class="num">69%</span>
+          </div>
+          <div class="donut-text"><b>Click away and don't come back.</b> Of disabled shoppers who hit a barrier on a site, most simply leave and buy from a competitor instead.</div>
+        </div>
+      </div>
+
+      <div class="mini-stats">
+        <div class="mini-stat">
+          <div class="n">$490B</div>
+          <div class="t">in annual disposable income held by people with disabilities in the U.S.</div>
+        </div>
+        <div class="mini-stat">
+          <div class="n">83%</div>
+          <div class="t">of disabled shoppers limit purchases to sites they already know are accessible — loyalty, once you earn it</div>
+        </div>
+      </div>
+      <p class="chart-caption">Sources: <a class="src-link" href="https://www.cdc.gov/media/releases/2024/s0716-Adult-disability.html" target="_blank" rel="noopener">CDC Disability and Health Data System</a> (2022–24); <a class="src-link" href="https://beaccessible.com/post/web-accessibility-statistics/" target="_blank" rel="noopener">American Institutes for Research</a>; <a class="src-link" href="https://www.clickawaypound.com/" target="_blank" rel="noopener">Click-Away Pound Survey</a> (UK-based research on disabled shoppers' site-abandonment behavior, a pattern consistently cited across markets).</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="legal">
+    <div class="wrap">
+      <div class="eyebrow">AND THE LEGAL EXPOSURE IS RISING TOO</div>
+      <h2>This isn't just a market you're missing. It's a filing you're exposed to.</h2>
+      <p class="lead-p">It usually isn't a customer who reports a broken site — plaintiffs' firms run automated scanners across thousands of sites at once, looking for the same handful of failures. Federal lawsuits are only the visible part; for every one filed, several more businesses get a demand letter instead and quietly settle.</p>
+
+      <div class="lawsuit-panel">
+        <svg viewBox="0 0 720 260" width="100%" height="260" role="img" aria-label="Federal website accessibility lawsuits filed per year, 2017 through 2025, alongside an estimated demand letter volume per year based on a 7 to 10 times ratio.">
+          <g id="linechart"></g>
+        </svg>
+        <div style="display:flex;gap:22px;flex-wrap:wrap;margin-top:6px;font-size:12.5px;color:var(--slate);">
+          <span><span style="display:inline-block;width:14px;height:3px;background:#6C63FF;vertical-align:middle;margin-right:6px;border-radius:2px;"></span>Demand letters per year (estimated, ~7–10x lawsuits)</span>
+          <span><span style="display:inline-block;width:14px;height:3px;background:#27C2A5;vertical-align:middle;margin-right:6px;border-radius:2px;"></span>Lawsuits filed per year (actual)</span>
+        </div>
+      </div>
+      <p class="chart-caption">Both lines show per-year counts, not cumulative totals — the actual number of federal lawsuits filed since 2018 exceeds 25,000. Lawsuit line: <a class="src-link" href="https://www.adatitleiii.com/2026/03/federal-court-website-accessibility-lawsuit-filings-bounce-back-in-2025/" target="_blank" rel="noopener">Seyfarth Shaw / ADATitleIII.com</a>, actual federal filings. Letter line: 2025 uses the reported estimate directly (<a class="src-link" href="https://wcagsafe.com/blog/ada-lawsuit-statistics" target="_blank" rel="noopener">UsableNet, WCAGsafe</a>, 35,000+); earlier years have no published count, so they apply the same ~7–10x ratio to that year's lawsuit total, for illustration only.</p>
+
+      <p style="margin-top:22px;">Both cost real money, and neither is optional to respond to. A lawsuit typically settles for <b>$5,000 to $75,000</b> before your own legal fees — and you still have to fix the site afterward. A demand letter rarely reaches a courtroom, but ignoring one isn't free: you're paying an attorney to respond either way, and most still end in a negotiated settlement. The letter is cheaper to make go away than the lawsuit it turns into if you don't.</p>
+
+      <div class="mini-stats-tri">
+        <div class="mini-stat tri-top" style="background:var(--paper-dim);border-color:var(--line);">
+          <div class="n" style="color:var(--signal-dim);">35,000+</div>
+          <div class="t" style="color:var(--slate);">demand letters sent in <a class="src-link" href="https://wcagsafe.com/blog/ada-lawsuit-statistics" target="_blank" rel="noopener" style="color:var(--slate);">2025 alone</a> — the real scope behind the smaller lawsuit numbers.</div>
+        </div>
+        <div class="mini-stat" style="background:var(--paper-dim);border-color:var(--line);">
+          <div class="n" style="color:var(--signal-dim);">25,000+</div>
+          <div class="t" style="color:var(--slate);">total federal lawsuits filed <a class="src-link" href="https://beaccessible.com/post/americans-with-disabilities-act-statistics/" target="_blank" rel="noopener" style="color:var(--slate);">since 2018</a> — the cumulative scale behind the per-year counts above.</div>
+        </div>
+        <div class="mini-stat" style="background:var(--paper-dim);border-color:var(--line);">
+          <div class="n" style="color:var(--signal-dim);">69–77%</div>
+          <div class="t" style="color:var(--slate);">of <a class="src-link" href="https://testparty.ai/blog/ada-lawsuit-trends-ecommerce-2025-2026-data" target="_blank" rel="noopener" style="color:var(--slate);">digital accessibility cases</a> target ecommerce stores — the single most-targeted sector.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="human">
+    <div class="wrap">
+      <div class="eyebrow">WHY THIS ISN'T AN AI JOB</div>
+      <h2>A scanner can't sit where a screen reader user sits.</h2>
+      <p class="lead-p">Automated tools are real and useful — they catch missing alt text and contrast ratios fast. But industry research puts their overall coverage at roughly 30–40% of WCAG issues. The rest requires a person, and the gap is worst in exactly the two tests that matter most: whether you can operate a site by keyboard, and whether a screen reader actually makes sense of it.</p>
+
+      <div class="hr-grid">
+        <div class="coverage">
+          <div class="coverage-row">
+            <span class="lbl">Color contrast</span>
+            <span class="pct">98%</span>
+            <div class="track"><div class="fill" style="width:98%"></div></div>
+          </div>
+          <div class="coverage-row">
+            <span class="lbl">Overall WCAG coverage</span>
+            <span class="pct">30–40%</span>
+            <div class="track"><div class="fill" style="width:35%"></div></div>
+          </div>
+          <div class="coverage-row">
+            <span class="lbl">Screen reader compatibility</span>
+            <span class="pct">~23%</span>
+            <div class="track"><div class="fill" style="width:23%"></div></div>
+          </div>
+          <div class="coverage-row">
+            <span class="lbl">Keyboard navigation</span>
+            <span class="pct">~2%</span>
+            <div class="track"><div class="fill" style="width:4%"></div></div>
+          </div>
+        </div>
+        <div>
+          <p>Automated coverage share, by category — what a scanner can reliably catch on its own.</p>
+          <p>Keyboard navigation and screen reader compatibility are the two things I test by hand on every audit, because they're the two things a scanner is worst at. That's not a sales line — it's the reason a $1,500 audit and a free automated scan aren't the same product.</p>
+          <p class="chart-caption">Sources: <a class="src-link" href="https://www.deque.com/automated-accessibility-coverage-report/" target="_blank" rel="noopener">Deque Automated Accessibility Coverage Report</a>; <a class="src-link" href="https://www.accessibility.works/blog/automated-wcag-testing-tools-accessibility-compliance/" target="_blank" rel="noopener">UK Government Digital Service tool comparison; Accessibility.Works research</a>, 2026.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="sample">
+    <div class="wrap">
+      <div class="eyebrow">WHAT YOU ACTUALLY GET</div>
+      <h2>A report you can hand straight to a developer</h2>
+      <p class="lead-p">Every finding is written the same way: what's broken, where, why it matters, and the exact fix. No jargon your team has to translate.</p>
+
+      <div class="samples">
+        <div class="sample-card">
+          <span class="sev sev-crit">CRITICAL</span>
+          <h4>Checkout field has no accessible name</h4>
+          <p>A screen reader announces nothing for the card number field. A blind customer can shop your entire site and still can't pay.</p>
+          <div class="fix">FIX: add aria-label="Card number" to the input</div>
+        </div>
+        <div class="sample-card">
+          <span class="sev sev-high">HIGH</span>
+          <h4>Filter controls don't register</h4>
+          <p>Sort and filter options are visually present but never announce as selectable — the feature doesn't work for a screen reader user at all.</p>
+          <div class="fix">FIX: pair each input with one matching &lt;label for&gt;</div>
+        </div>
+        <div class="sample-card">
+          <span class="sev sev-high">HIGH</span>
+          <h4>Contrast below the required ratio</h4>
+          <p>Body text at 3.1:1 against its background — under the 4.5:1 minimum. Hard to read for a lot of visitors, not only screen reader users.</p>
+          <div class="fix">FIX: darken text color to #3A4048 or better</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="work">
+    <div class="wrap">
+      <div class="eyebrow">HOW I WORK</div>
+      <h2>I'm the inspector, not the contractor</h2>
+      <p class="lead-p">I test your site, tell you precisely what fails and how to fix it, and hand the report to you and your developer. I don't make the changes myself — so I have no reason to find problems that aren't there, and none to leave any out.</p>
+
+      <div class="cards">
+        <div class="card">
+          <h3>The Audit</h3>
+          <div class="price mono">$1,500 – $3,500</div>
+          <ul>
+            <li>Tested against WCAG 2.1 Level AA</li>
+            <li>Manual keyboard-only navigation, start to finish</li>
+            <li>Manual screen reader testing on real assistive technology</li>
+            <li>Checkout and contact forms tested end to end</li>
+            <li>Every finding documented with evidence and severity</li>
+            <li>Fixes written specifically enough for your developer to apply directly</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Ongoing Monitoring</h3>
+          <div class="price mono">$200 – $500 / month</div>
+          <ul>
+            <li>A site that passed in March can fail in April</li>
+            <li>Monthly automated scan with a plain-English summary</li>
+            <li>Quarterly full manual re-test</li>
+            <li>New pages and templates reviewed as you add them</li>
+            <li>Updated conformance report every quarter — dated and on file</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="honest">
+    <div class="wrap">
+      <div class="eyebrow">WHAT I WON'T PROMISE</div>
+      <h2>No guarantees. Just evidence.</h2>
+      <p class="lead-p">No one can guarantee you won't be sued, and anyone who says otherwise is selling something. What I can do is test your site honestly, write down what I found, and keep checking. Every engagement produces a dated conformance report — the first thing your attorney asks for if a complaint ever arrives.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-cta">
+      <h2>Find your one issue — free, same day</h2>
+      <p>Send your URL. I'll test it by hand and send your developer a real finding with a fix, the same day — a preview of what a full audit turns up across the rest of your site.</p>
+      <a class="btn btn-signal" href="mailto:cody@hektiq.com?subject=Find%20one%20issue%20on%20my%20site">Email cody@hektiq.com</a>
+    </div>
+    <div class="foot-meta">
+      <span>Cody Green · Based in Louisiana</span>
+      <span>(318) 319-4561 · cody@hektiq.com</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- population trend line (raw counts, millions) ---- */
+  (function(){
+    var data = [["2019",41.2],["2021",42.5],["2022",44.1],["2023",44.7],["2024",45.8]];
+    var svg = document.getElementById('trend');
+    var W=640,H=190,padL=14,padR=14,padT=22,bottom=32;
+    var min=40.5,max=46.3;
+    var stepX = (W - padL - padR) / (data.length-1);
+    function xy(i,v){
+      var x = padL + i*stepX;
+      var y = padT + (H-padT-bottom) * (1 - (v-min)/(max-min));
+      return [x,y];
+    }
+    var pts = data.map(function(d,i){ return xy(i,d[1]); });
+    var linePath = 'M' + pts.map(function(p){return p[0]+','+p[1];}).join(' L');
+    var areaPath = linePath + ' L' + pts[pts.length-1][0] + ',' + (H-bottom) + ' L' + pts[0][0] + ',' + (H-bottom) + ' Z';
+
+    var area = document.createElementNS('http://www.w3.org/2000/svg','path');
+    area.setAttribute('d', areaPath);
+    area.setAttribute('fill', 'rgba(39,194,165,0.14)');
+    svg.appendChild(area);
+
+    var line = document.createElementNS('http://www.w3.org/2000/svg','path');
+    line.setAttribute('d', linePath);
+    line.setAttribute('fill','none');
+    line.setAttribute('stroke','#27C2A5');
+    line.setAttribute('stroke-width','3');
+    line.setAttribute('stroke-linecap','round');
+    line.setAttribute('stroke-linejoin','round');
+    if(!reduced){
+      var len = 700;
+      line.setAttribute('stroke-dasharray', len);
+      line.setAttribute('stroke-dashoffset', len);
+      line.innerHTML = '<animate attributeName="stroke-dashoffset" from="'+len+'" to="0" dur="1s" begin="0.1s" fill="freeze" calcMode="spline" keySplines="0.16 0.8 0.2 1"/>';
+    }
+    svg.appendChild(line);
+
+    pts.forEach(function(p,i){
+      var dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('cx',p[0]);dot.setAttribute('cy',p[1]);dot.setAttribute('r',4.5);
+      dot.setAttribute('fill','#0D2438');dot.setAttribute('stroke','#27C2A5');dot.setAttribute('stroke-width','2.5');
+      svg.appendChild(dot);
+
+      var val = document.createElementNS('http://www.w3.org/2000/svg','text');
+      val.setAttribute('x', p[0]); val.setAttribute('y', p[1]-12);
+      val.setAttribute('text-anchor', i===0 ? 'start' : (i===pts.length-1 ? 'end' : 'middle'));
+      val.setAttribute('fill', '#fff'); val.setAttribute('font-size','13'); val.setAttribute('font-weight','700');
+      val.setAttribute('font-family','JetBrains Mono, monospace');
+      val.textContent = data[i][1] + 'M';
+      svg.appendChild(val);
+
+      var lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+      lbl.setAttribute('x', p[0]); lbl.setAttribute('y', H-bottom+20);
+      lbl.setAttribute('text-anchor', i===0 ? 'start' : (i===pts.length-1 ? 'end' : 'middle'));
+      lbl.setAttribute('fill','#8FA1B2'); lbl.setAttribute('font-size','11');
+      lbl.setAttribute('font-family','JetBrains Mono, monospace');
+      lbl.textContent = data[i][0];
+      svg.appendChild(lbl);
+    });
+  })();
+
+  /* ---- legal exposure: two-band line chart (letters above, lawsuits below) ---- */
+  (function(){
+    var lawsuits = [
+      ["2017",814],["2018",2258],["2019",2256],["2020",2523],
+      ["2021",2895],["2022",3255],["2023",2794],["2024",2452],["2025",3117]
+    ];
+    var svg = document.getElementById('linechart');
+    if(!svg) return;
+    var W=720,H=260,padL=14,padR=14;
+    var n = lawsuits.length;
+    var stepX = (W - padL - padR) / (n-1);
+
+    // letters band occupies the top, lawsuits band occupies the bottom — visually
+    // separated so magnitude reads correctly at a glance, and each is zoomed
+    // tightly to its own real range so peaks and valleys are dramatic.
+    var letterBandTop = 14, letterBandBottom = 108;
+    var lawBandTop = 140, lawBandBottom = 224;
+    var labelY = 246;
+
+    var letterVals = lawsuits.map(function(d,i){
+      // 2025 uses the actual reported estimate (35,000+) so it matches the stat
+      // card below; earlier years have no published count, so they apply the
+      // same 7–10x ratio to the lawsuit count purely for illustration.
+      return (i===lawsuits.length-1) ? 35000 : d[1]*8.5;
+    });
+    var lawVals = lawsuits.map(function(d){ return d[1]; });
+    var letterMin = Math.min.apply(null, letterVals), letterMax = Math.max.apply(null, letterVals);
+    var lawMin = Math.min.apply(null, lawVals), lawMax = Math.max.apply(null, lawVals);
+    var letterPad = (letterMax-letterMin)*0.15, lawPad = (lawMax-lawMin)*0.15;
+
+    function band(v, min, max, top, bottom){
+      return bottom - (bottom-top) * ((v-min)/(max-min));
+    }
+    var ptsLetter = lawsuits.map(function(d,i){
+      return [padL+i*stepX, band(letterVals[i], letterMin-letterPad, letterMax+letterPad, letterBandTop, letterBandBottom)];
+    });
+    var ptsLaw = lawsuits.map(function(d,i){
+      return [padL+i*stepX, band(d[1], lawMin-lawPad, lawMax+lawPad, lawBandTop, lawBandBottom)];
+    });
+
+    function drawLine(pts, color, width, dash, animDur, animDelay){
+      var d = 'M'+pts.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' L');
+      var path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d', d);
+      path.setAttribute('fill','none');
+      path.setAttribute('stroke', color);
+      path.setAttribute('stroke-width', width);
+      path.setAttribute('stroke-linecap','round');
+      path.setAttribute('stroke-linejoin','round');
+      if(dash) path.setAttribute('stroke-dasharray', dash);
+      if(!reduced){
+        var len = 2600;
+        var base = dash ? dash : (''+len);
+        path.setAttribute('stroke-dasharray', dash ? dash : len);
+        if(!dash){
+          path.setAttribute('stroke-dashoffset', len);
+          path.innerHTML = '<animate attributeName="stroke-dashoffset" from="'+len+'" to="0" dur="'+animDur+'s" begin="'+animDelay+'s" fill="freeze" calcMode="spline" keySplines="0.16 0.8 0.2 1"/>';
+        } else {
+          path.style.opacity = 0;
+          path.innerHTML = '<animate attributeName="opacity" from="0" to="1" dur="0.8s" begin="'+animDelay+'s" fill="freeze"/>';
+        }
+      }
+      svg.appendChild(path);
+      return path;
+    }
+
+    // letters line drawn first (background), purple, dashed, fades in
+    drawLine(ptsLetter, '#6C63FF', 3, '8,6', 0.8, 0.5);
+    // lawsuits line, teal, solid, draws in
+    drawLine(ptsLaw, '#27C2A5', 3, null, 1.2, 0.1);
+
+    function dotsAndLabels(pts, vals, color, isLetters){
+      pts.forEach(function(p,i){
+        var isLast = i===pts.length-1;
+        var dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        dot.setAttribute('cx',p[0]);dot.setAttribute('cy',p[1]);dot.setAttribute('r', isLast?5:3);
+        dot.setAttribute('fill', isLast?color:'#0D2438');
+        dot.setAttribute('stroke',color);dot.setAttribute('stroke-width','2');
+        svg.appendChild(dot);
+      });
+      var last = pts[pts.length-1];
+      var val = document.createElementNS('http://www.w3.org/2000/svg','text');
+      val.setAttribute('x', last[0]); val.setAttribute('y', isLetters ? last[1]-12 : last[1]-12);
+      val.setAttribute('text-anchor','end');
+      val.setAttribute('fill', color); val.setAttribute('font-size','13'); val.setAttribute('font-weight','700');
+      val.setAttribute('font-family','JetBrains Mono, monospace');
+      val.textContent = isLetters
+        ? (vals[vals.length-1]===35000 ? '35,000+' : '~'+Math.round(vals[vals.length-1]/1000)+'k') + ' letters/yr'
+        : vals[vals.length-1].toLocaleString() + ' lawsuits/yr';
+      svg.appendChild(val);
+    }
+    dotsAndLabels(ptsLetter, letterVals, '#6C63FF', true);
+    dotsAndLabels(ptsLaw, lawVals, '#27C2A5', false);
+
+    // band captions
+    function bandLabel(x,y,text,color){
+      var t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('text-anchor','start');
+      t.setAttribute('fill',color);t.setAttribute('font-size','10.5');
+      t.setAttribute('font-family','JetBrains Mono, monospace');
+      t.textContent = text;
+      svg.appendChild(t);
+    }
+    bandLabel(padL, letterBandTop-2, 'ESTIMATED LETTERS · PER YEAR', '#6C63FF');
+    bandLabel(padL, lawBandTop-2, 'ACTUAL LAWSUITS · PER YEAR', '#27C2A5');
+
+    // shared year axis
+    lawsuits.forEach(function(d,i){
+      var x = padL+i*stepX;
+      var lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+      lbl.setAttribute('x', x); lbl.setAttribute('y', labelY);
+      lbl.setAttribute('text-anchor','middle');
+      lbl.setAttribute('fill','#8FA1B2'); lbl.setAttribute('font-size','11');
+      lbl.setAttribute('font-family','JetBrains Mono, monospace');
+      lbl.textContent = "'"+d[0].slice(2);
+      svg.appendChild(lbl);
+    });
+  })();
+
+  /* ---- donut rings ---- */
+  var R = 46, C = 2*Math.PI*R;
+  document.querySelectorAll('.ring-fill').forEach(function(circle, i){
+    var pct = parseFloat(circle.getAttribute('data-pct'));
+    var offset = C * (1 - pct/100);
+    circle.setAttribute('stroke-dasharray', C);
+    if(reduced){
+      circle.setAttribute('stroke-dashoffset', offset);
+    } else {
+      circle.setAttribute('stroke-dashoffset', C);
+      circle.innerHTML = '<animate attributeName="stroke-dashoffset" from="'+C+'" to="'+offset+'" dur="1.1s" begin="'+(i*0.15)+'s" fill="freeze" calcMode="spline" keySplines="0.16 0.8 0.2 1"/>';
+    }
+  });
+
+  /* ---- coverage bars ---- */
+  if(!reduced){
+    var fills = document.querySelectorAll('.coverage .fill');
+    var seen = false;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting && !seen){
+          seen = true;
+          fills.forEach(function(f, i){
+            var w = f.style.width;
+            f.style.width = '0%';
+            setTimeout(function(){
+              f.style.transition = 'width 0.9s cubic-bezier(.16,.8,.2,1)';
+              f.style.width = w;
+            }, i*90);
+          });
+        }
+      });
+    }, {threshold:0.3});
+    var cov = document.querySelector('.coverage');
+    if(cov) io.observe(cov);
+  }
+})();
+</script>
+
+</body>
+</html>
