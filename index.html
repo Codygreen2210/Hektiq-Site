@@ -674,12 +674,13 @@
       document.getElementById('swLogo').textContent = t.logo;
     }
     document.getElementById('swCta').textContent = t.cta; document.getElementById('swTag').textContent = t.label.toUpperCase();
-    document.getElementById('swImg').innerHTML = SW_ICONS[swIndustry];
     const tone = t.tones[swTone]; document.getElementById('swHeadline').textContent = tone.h; document.getElementById('swSub').textContent = tone.s;
     document.getElementById('swAccentPicker').value = accent; document.getElementById('swAccent2Picker').value = accent2;
   }
-  document.getElementById('swAccentPicker').addEventListener('input', () => applySwTheme(swAccentPicker.value, swAccent2Picker.value));
-  document.getElementById('swAccent2Picker').addEventListener('input', () => applySwTheme(swAccentPicker.value, swAccent2Picker.value));
+  const swAccentPicker = document.getElementById('swAccentPicker');
+  const swAccent2Picker = document.getElementById('swAccent2Picker');
+  swAccentPicker.addEventListener('input', () => applySwTheme(swAccentPicker.value, swAccent2Picker.value));
+  swAccent2Picker.addEventListener('input', () => applySwTheme(swAccentPicker.value, swAccent2Picker.value));
   const swLogoInput = document.getElementById('swLogoInput'); const swHiddenCanvas = document.getElementById('swHiddenCanvas'); const swHctx = swHiddenCanvas.getContext('2d');
   const swStatus = document.getElementById('swUploadStatus');
   swLogoInput.addEventListener('change', e => {
