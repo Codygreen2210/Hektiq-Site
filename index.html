@@ -114,7 +114,9 @@
   .sw-hero { flex: 1; display: flex; align-items: center; gap: 24px; }
   .sw-headline { font-family: var(--t-font); font-size: 26px; font-weight: 600; line-height: 1.15; margin-bottom: 10px; color: var(--t-ink); }
   .sw-sub { font-size: 12.5px; color: var(--t-ink); opacity: 0.62; max-width: 320px; }
-  .sw-img { width: 130px; height: 95px; border-radius: 8px; flex-shrink: 0; background: linear-gradient(135deg, var(--t-accent), var(--t-accent2)); }
+  .sw-img { width: 130px; height: 95px; border-radius: 8px; flex-shrink: 0; background: linear-gradient(135deg, var(--t-accent), var(--t-accent2)) center/cover; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 26px rgba(0,0,0,0.28); }
+  .sw-img::after { content: ''; position: absolute; top: -30%; left: -10%; width: 60%; height: 160%; background: linear-gradient(115deg, rgba(255,255,255,0.22), transparent 60%); transform: rotate(8deg); }
+  .sw-img svg { position: relative; z-index: 1; width: 40px; height: 40px; opacity: 0.95; }
   .sw-tag { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.3); color: var(--gold); font-size: 10px; padding: 4px 10px; border-radius: 20px; z-index: 3; }
   .sw-cust { max-width: 780px; margin: 2.5rem auto 0; padding: 1.75rem; }
   .sw-cust-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
@@ -241,10 +243,12 @@
   .shop-body { padding: 1.5rem; }
   .breadcrumb { font-size: 11.5px; color: var(--p-ink-faint); padding-bottom: 1rem; }
   .product-main { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; padding-bottom: 3rem; }
-  .sh-main-image { aspect-ratio: 1; border-radius: var(--p-radius); background: linear-gradient(135deg, #C9A24B, #8A6D2E); position: relative; overflow: hidden; margin-bottom: 0.7rem; }
+  .sh-main-image { aspect-ratio: 1; border-radius: var(--p-radius); background: linear-gradient(135deg, #C9A24B, #8A6D2E); position: relative; overflow: hidden; margin-bottom: 0.7rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 14px 34px rgba(0,0,0,0.22); }
   .sh-main-image::after { content: ''; position: absolute; top: -30%; left: -10%; width: 60%; height: 160%; background: linear-gradient(115deg, rgba(255,255,255,0.18), transparent 60%); transform: rotate(8deg); }
+  .sh-main-image svg { position: relative; z-index: 1; width: 30%; opacity: 0.95; }
   .sh-thumbs { display: flex; gap: 8px; }
-  .sh-thumb { width: 54px; height: 54px; border-radius: var(--p-radius); cursor: pointer; opacity: 0.55; border: 2px solid transparent; }
+  .sh-thumb { width: 54px; height: 54px; border-radius: var(--p-radius); cursor: pointer; opacity: 0.55; border: 2px solid transparent; display: flex; align-items: center; justify-content: center; }
+  .sh-thumb svg { width: 40%; opacity: 0.9; }
   .sh-thumb.active { opacity: 1; border-color: var(--p-accent); }
   .cat-label { font-size: 11px; letter-spacing: 1px; color: var(--p-ink-faint); display: block; margin-bottom: 0.5rem; }
   .product-title { font-size: 28px; font-weight: 500; margin-bottom: 0.5rem; }
@@ -273,7 +277,8 @@
   .related-track { display: flex; gap: 1.1rem; width: max-content; animation: shRelatedScroll 28s linear infinite; }
   @keyframes shRelatedScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   .rel-card { width: 160px; flex-shrink: 0; }
-  .rel-img { aspect-ratio: 1; border-radius: var(--p-radius); margin-bottom: 0.6rem; }
+  .rel-img { aspect-ratio: 1; border-radius: var(--p-radius); margin-bottom: 0.6rem; display: flex; align-items: center; justify-content: center; }
+  .rel-img svg { width: 34%; opacity: 0.9; }
   .rel-name { font-size: 13px; margin-bottom: 2px; color: var(--p-ink); } .rel-price { font-size: 12px; color: var(--p-ink-soft); }
   .reviews { padding: 1.5rem 0 3rem; border-top: 1px solid var(--p-line); }
   .reviews h2 { font-size: 21px; font-weight: 500; margin-bottom: 1.3rem; }
@@ -637,13 +642,19 @@
   requestAnimationFrame(drawBg);
 
   /* ============ SHOWCASE ============ */
+  const SW_PHOTOS = {
+    salon: 'https://images.pexels.com/photos/7750099/pexels-photo-7750099.jpeg?auto=compress&w=600&h=450&dpr=1',
+    restaurant: 'https://images.pexels.com/photos/18014532/pexels-photo-18014532.jpeg?auto=compress&w=600&h=450&dpr=1',
+    contractor: 'https://images.pexels.com/photos/7285927/pexels-photo-7285927.jpeg?auto=compress&w=600&h=450&dpr=1',
+    boutique: 'https://images.pexels.com/photos/5424922/pexels-photo-5424922.jpeg?auto=compress&w=600&h=450&dpr=1',
+  };
   const SW_THEMES = {
     salon: { label:'Salon', bg:'#F7F1E7', ink:'#2B211A', accent:'#B15A34', accent2:'#8C5A34', font:"'Fraunces', serif", logo:'Marigold', cta:'Book appointment', tones:{ warm:{h:'Where your next look starts with a conversation.', s:'Color, cuts, and styling from a team that treats every chair like the only one in the room.'}, premium:{h:'Precision color. Considered style.', s:'A studio built around technique, not trends — booked in under a minute.'} } },
     restaurant: { label:'Restaurant', bg:'#1B1714', ink:'#F3ECE2', accent:'#C9A24B', accent2:'#8A6D2E', font:"'Playfair Display', serif", logo:'Bordeaux', cta:'Reserve a table', tones:{ warm:{h:'Good food, good people, no pretense.', s:'A neighborhood table that happens to cook like it means it.'}, premium:{h:'A menu built around the season.', s:'Seasonal, considered, and reserved in advance.'} } },
     contractor: { label:'Contractor', bg:'#F3F4F6', ink:'#111827', accent:'#D9611E', accent2:'#9A4413', font:"'Archivo Black', sans-serif", logo:'IRONCLAD', cta:'Get a free quote', tones:{ warm:{h:'We show up. We finish. We clean up.', s:'Straightforward work from a crew that actually answers the phone.'}, premium:{h:'Licensed. Insured. On schedule.', s:'Full-service renovation, built to code and to the deadline.'} } },
     boutique: { label:'Boutique', bg:'#F7F0EC', ink:'#241C1A', accent:'#8A4B3B', accent2:'#3A2A26', font:"'Cormorant Garamond', serif", logo:'Lumen', cta:'Shop the edit', tones:{ warm:{h:'Pieces you will actually wear again.', s:'A small, considered edit — restocked slowly, on purpose.'}, premium:{h:'Fewer pieces. Better ones.', s:'A curated edit for a wardrobe that does not repeat itself.'} } },
   };
-  let swIndustry = 'salon', swTone = 'warm';
+  let swIndustry = 'salon', swTone = 'warm', uploadedLogoDataUrl = null;
   const swStage = document.getElementById('swStage');
   const swRow = document.getElementById('industryRow');
   Object.keys(SW_THEMES).forEach((key,i) => {
@@ -654,9 +665,16 @@
   document.querySelectorAll('#toneRow .pill').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('#toneRow .pill').forEach(p=>p.classList.remove('active')); b.classList.add('active'); swTone = b.dataset.tone; applySwTheme(); }));
   function applySwTheme(oa, oa2) {
     const t = SW_THEMES[swIndustry]; const accent = oa || t.accent; const accent2 = oa2 || t.accent2;
+    document.getElementById('swImg').style.backgroundImage = `url('${SW_PHOTOS[swIndustry]}')`;
     swStage.style.setProperty('--t-bg', t.bg); swStage.style.setProperty('--t-ink', t.ink);
     swStage.style.setProperty('--t-accent', accent); swStage.style.setProperty('--t-accent2', accent2); swStage.style.setProperty('--t-font', t.font);
-    document.getElementById('swLogo').textContent = t.logo; document.getElementById('swCta').textContent = t.cta; document.getElementById('swTag').textContent = t.label.toUpperCase();
+    if (uploadedLogoDataUrl) {
+      document.getElementById('swLogo').innerHTML = `<img src="${uploadedLogoDataUrl}" style="height:24px;max-width:90px;width:auto;object-fit:contain;display:block;">`;
+    } else {
+      document.getElementById('swLogo').textContent = t.logo;
+    }
+    document.getElementById('swCta').textContent = t.cta; document.getElementById('swTag').textContent = t.label.toUpperCase();
+    document.getElementById('swImg').innerHTML = SW_ICONS[swIndustry];
     const tone = t.tones[swTone]; document.getElementById('swHeadline').textContent = tone.h; document.getElementById('swSub').textContent = tone.s;
     document.getElementById('swAccentPicker').value = accent; document.getElementById('swAccent2Picker').value = accent2;
   }
@@ -686,8 +704,9 @@
         const darker = '#'+[r,g,b].map(v=>Math.round(v*0.62).toString(16).padStart(2,'0')).join('');
         document.getElementById('swExtractPreview').style.display='flex'; document.getElementById('swExtractSwatch').style.background=hex; document.getElementById('swExtractLabel').textContent='Extracted '+hex;
         document.getElementById('swAccentPicker').value=hex; document.getElementById('swAccent2Picker').value=darker;
+        uploadedLogoDataUrl = evt.target.result;
         applySwTheme(hex, darker);
-        swStatus.textContent = 'Done — scroll up to see it applied.';
+        swStatus.textContent = 'Done — your logo is now on the mockup above.';
       };
       img.src = evt.target.result;
     };
@@ -695,7 +714,7 @@
   });
   applySwTheme();
   function resetShowcase() {
-    swIndustry = 'salon'; swTone = 'warm';
+    swIndustry = 'salon'; swTone = 'warm'; uploadedLogoDataUrl = null;
     document.querySelectorAll('#industryRow .pill').forEach((p,i) => p.classList.toggle('active', i===0));
     document.querySelectorAll('#toneRow .pill').forEach(p => p.classList.toggle('active', p.dataset.tone==='warm'));
     document.getElementById('swExtractPreview').style.display = 'none';
@@ -884,7 +903,7 @@
     shApplyStyle('minimal');
     document.querySelectorAll('#shPillRow .sb-pill').forEach((p,i) => p.classList.toggle('active', i===0));
     document.querySelectorAll('.sh-thumb').forEach((t,i) => t.classList.toggle('active', i===0));
-    shMainImage.style.background = `linear-gradient(135deg, ${shThumbGrads[0][0]}, ${shThumbGrads[0][1]})`;
+    shMainImage.style.backgroundImage = `url('${CANDLE_PHOTO}')`; shMainImage.style.backgroundSize = 'cover'; shMainImage.style.backgroundPosition = 'center';
     shQty = 1; shPrice = 38;
     document.getElementById('shQtyVal').textContent = 1;
     document.querySelectorAll('#shSizeOptions .variant-pill').forEach((p,i) => p.classList.toggle('active', i===0));
@@ -896,8 +915,10 @@
   }
   const shThumbGrads = [ ['#C9A24B','#8A6D2E'], ['#B15A34','#7A3D22'], ['#8C6A45','#5C4429'], ['#D9A24B','#A9682E'] ];
   const shThumbs = document.getElementById('shThumbs'); const shMainImage = document.getElementById('shMainImage');
-  shThumbGrads.forEach((g,i) => { const t=document.createElement('div'); t.className='sh-thumb'+(i===0?' active':''); t.style.background=`linear-gradient(135deg, ${g[0]}, ${g[1]})`; t.addEventListener('click',()=>{ document.querySelectorAll('.sh-thumb').forEach(x=>x.classList.remove('active')); t.classList.add('active'); shMainImage.style.background=`linear-gradient(135deg, ${g[0]}, ${g[1]})`; }); shThumbs.appendChild(t); });
-  shMainImage.style.background = `linear-gradient(135deg, ${shThumbGrads[0][0]}, ${shThumbGrads[0][1]})`;
+  const CANDLE_PHOTO = 'https://images.pexels.com/photos/6255810/pexels-photo-6255810.jpeg?auto=compress&w=600&h=600&dpr=1';
+  const CANDLE_SVG = '<svg viewBox="0 0 100 100" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M38 92 L38 46 C38 41 62 41 62 46 L62 92 Z"/><line x1="50" y1="41" x2="50" y2="27"/><path d="M50 27 C45 18 50 11 50 11 C50 11 55 18 50 27 Z" fill="rgba(255,205,130,0.95)" stroke="none"/></svg>';
+  shThumbGrads.forEach((g,i) => { const t=document.createElement('div'); t.className='sh-thumb'+(i===0?' active':''); t.style.background=`linear-gradient(135deg, ${g[0]}, ${g[1]})`; t.innerHTML=CANDLE_SVG; t.addEventListener('click',()=>{ document.querySelectorAll('.sh-thumb').forEach(x=>x.classList.remove('active')); t.classList.add('active'); shMainImage.style.background=`linear-gradient(135deg, ${g[0]}, ${g[1]})`; shMainImage.style.backgroundImage = `url('${CANDLE_PHOTO}')`; shMainImage.style.backgroundSize='cover'; shMainImage.style.backgroundPosition='center'; }); shThumbs.appendChild(t); });
+  shMainImage.style.backgroundImage = `url('${CANDLE_PHOTO}')`; shMainImage.style.backgroundSize = 'cover'; shMainImage.style.backgroundPosition = 'center';
   let shQty=1, shPrice=38;
   document.querySelectorAll('#shSizeOptions .variant-pill').forEach(p => p.addEventListener('click', () => { document.querySelectorAll('#shSizeOptions .variant-pill').forEach(x=>x.classList.remove('active')); p.classList.add('active'); shPrice=parseInt(p.dataset.price); shUpdatePrice(); }));
   function shUpdatePrice() { document.getElementById('shPriceLabel').textContent='$'+shPrice; document.getElementById('shAddBtn').textContent=`Add to cart — $${shPrice*shQty}`; }
@@ -914,7 +935,7 @@
   SH_ACC.forEach(item => { const div=document.createElement('div'); div.className='acc-item'; div.innerHTML=`<div class="acc-head"><span>${item.t}</span><span class="acc-arrow">▾</span></div><div class="acc-body" hidden>${item.b}</div>`; div.querySelector('.acc-head').addEventListener('click',()=>{ const body=div.querySelector('.acc-body'); const arrow=div.querySelector('.acc-arrow'); const isHidden=body.hasAttribute('hidden'); if (isHidden) { body.removeAttribute('hidden'); arrow.classList.add('open'); } else { body.setAttribute('hidden',''); arrow.classList.remove('open'); } }); shAccWrap.appendChild(div); });
   const SH_RELATED = [ {name:'Fig Leaf Candle', price:34, g:['#6B7A4A','#3E4A28']}, {name:'Sea Salt & Driftwood', price:34, g:['#7A8B96','#3E4A52']}, {name:'Ceramic Match Holder', price:18, g:['#B08D57','#7A5F34']}, {name:'Cedar & Clove Candle', price:36, g:['#9C6B3E','#5C3E22']}, {name:'Vetiver & Moss', price:38, g:['#5C6B4A','#2E3822']}, {name:'Brass Wick Trimmer', price:22, g:['#C9A24B','#8A6D2E']} ];
   const shRelGrid = document.getElementById('shRelatedGrid');
-  [...SH_RELATED, ...SH_RELATED].forEach(r => { const card=document.createElement('div'); card.className='rel-card'; card.innerHTML=`<div class="rel-img" style="background:linear-gradient(135deg, ${r.g[0]}, ${r.g[1]})"></div><div class="rel-name">${r.name}</div><div class="rel-price">$${r.price}</div>`; shRelGrid.appendChild(card); });
+  [...SH_RELATED, ...SH_RELATED].forEach(r => { const card=document.createElement('div'); card.className='rel-card'; card.innerHTML=`<div class="rel-img" style="background:linear-gradient(135deg, ${r.g[0]}, ${r.g[1]})">${CANDLE_SVG}</div><div class="rel-name">${r.name}</div><div class="rel-price">$${r.price}</div>`; shRelGrid.appendChild(card); });
   const SH_BARS = [ [5,78],[4,15],[3,4],[2,2],[1,1] ];
   const shRevBars = document.getElementById('shRevBars');
   SH_BARS.forEach(([star,pct]) => { const row=document.createElement('div'); row.className='rev-bar-row'; row.innerHTML=`<span>${star}★</span><div class="rev-bar-track"><div class="rev-bar-fill" style="width:${pct}%"></div></div><span>${pct}%</span>`; shRevBars.appendChild(row); });
