@@ -162,6 +162,35 @@ section{padding:clamp(3rem,9vw,5rem) 0}
 .why li{font-size:.85rem;color:var(--dim);display:flex;gap:.55rem;line-height:1.5}
 .why li::before{content:"";flex:0 0 auto;width:5px;height:5px;border-radius:50%;background:var(--amber);margin-top:.55rem}
 .src{font-size:.74rem;color:var(--dim2);margin-top:1.1rem;line-height:1.6}
+.tbtns{display:flex;gap:.4rem;width:100%;margin-top:.3rem}
+.tbtns button{flex:1;border-radius:7px;padding:.6rem;font-size:.84rem;font-weight:500}
+.tsend{border:1px solid var(--amber);background:var(--amber);color:#15100A}
+.tsend:hover{background:var(--amber-d)}
+.tclear{border:1px solid var(--line2);background:transparent;color:var(--dim)}
+.tclear:hover{background:var(--surf2);color:var(--fg)}
+.tclear:disabled{opacity:.32;cursor:default}
+.modal{position:fixed;inset:0;z-index:60;background:rgba(6,9,13,.82);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center}
+.modal[hidden]{display:none}
+.modal>div{width:100%;max-width:31rem;background:#0E141B;border:1px solid var(--line2);border-radius:14px 14px 0 0;padding:1.2rem 1.15rem 1.6rem;max-height:92vh;overflow-y:auto;animation:mu .32s cubic-bezier(.2,.9,.3,1)}
+@media(min-width:40rem){.modal{align-items:center}.modal>div{border-radius:14px}}
+@keyframes mu{from{transform:translateY(28px);opacity:0}}
+.modal h3{font-size:1.12rem}
+.mlede{font-size:.85rem;color:var(--dim);margin:.25rem 0 1rem}
+.recap{background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:.75rem .85rem;margin-bottom:1rem}
+.recap .r{display:flex;justify-content:space-between;gap:.8rem;font-size:.82rem;margin-bottom:.28rem}
+.recap .r dt{color:var(--dim)}
+.recap .r dd{margin:0;white-space:nowrap}
+.recap .rt{border-top:1px solid var(--line);margin-top:.5rem;padding-top:.5rem;font-weight:500;margin-bottom:0}
+.recap .rt dd{color:var(--amber)}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+@media(max-width:26rem){.f2{grid-template-columns:1fr}}
+.mact{display:flex;gap:.4rem;margin-top:.9rem}
+.mact button{flex:1;border-radius:7px;padding:.7rem;font-size:.88rem;font-weight:500}
+.msg2{font-size:.82rem;margin-top:.7rem;line-height:1.55;min-height:1.1rem}
+.msg2.err{color:#F0907A}
+.mclose{background:none;border:none;color:var(--dim);float:right;font-size:1.05rem;line-height:1;padding:.1rem .25rem}
+.sentwrap{text-align:center;padding:.4rem 0 .2rem}
+.tick{width:2.6rem;height:2.6rem;border-radius:50%;background:var(--amber);color:#15100A;display:grid;place-items:center;margin:0 auto .8rem;font-size:1.1rem}
 
 .phone-out{display:flex;justify-content:center;margin-top:1.5rem}
 .phone{
@@ -229,7 +258,7 @@ section{padding:clamp(3rem,9vw,5rem) 0}
 @keyframes su{from{transform:translateY(26px)}}
 .sheet h4{font-size:1.02rem;font-weight:700;letter-spacing:-.02em}
 .sheet .sub{font-size:.78rem;color:var(--dim2);margin:.2rem 0 .85rem}
-.fld{width:100%;background:var(--surf2);border:1px solid var(--line);border-radius:7px;padding:.65rem .7rem;font-size:.85rem;margin-bottom:.4rem}
+.fld{width:100%;background:var(--surf2);border:1px solid var(--line);border-radius:7px;padding:.65rem .7rem;font-size:.85rem;margin-bottom:.4rem;font-family:inherit;color:var(--fg)}
 textarea.fld{resize:none;height:4rem;line-height:1.5}
 .tick{width:2.6rem;height:2.6rem;border-radius:50%;background:var(--amber);color:#15100A;display:grid;place-items:center;margin:0 auto .9rem;font-size:1.1rem;animation:tp .45s cubic-bezier(.2,1.7,.4,1)}
 @keyframes tp{from{transform:scale(.4);opacity:0}}
@@ -396,6 +425,31 @@ footer{border-top:1px solid var(--line);margin-top:2rem}
   <p class="perf" id="perf"></p>
 </footer>
 
+<div class="modal" id="mail" hidden role="dialog" aria-modal="true" aria-labelledby="mailH">
+  <div>
+    <button class="mclose" id="mailX" aria-label="Close">&#10005;</button>
+    <h3 id="mailH">Send me this build</h3>
+    <p class="mlede">I'll look it over and come back with anything I'd change, a realistic timeline and a firm price. No obligation either way.</p>
+    <div class="recap" id="recap"></div>
+    <form id="mailForm" novalidate>
+      <div class="f2">
+        <input class="fld" id="fName2" placeholder="Your name" autocomplete="name">
+        <input class="fld" id="fBiz" placeholder="Business name" autocomplete="organization">
+      </div>
+      <div class="f2">
+        <input class="fld" id="fEmail" type="email" placeholder="Email" autocomplete="email" inputmode="email">
+        <input class="fld" id="fPhone" type="tel" placeholder="Phone (optional)" autocomplete="tel" inputmode="tel">
+      </div>
+      <textarea class="fld" id="fNote" placeholder="Anything I should know? Current site, deadline, the kind of work you do."></textarea>
+      <div class="mact">
+        <button type="submit" class="tsend" id="mailSend">Send it</button>
+        <button type="button" class="tclear" id="mailCancel">Cancel</button>
+      </div>
+      <p class="msg2" id="mailMsg" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</div>
+
 <script>
 var RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
 
@@ -465,11 +519,36 @@ function cfgMarkup(){
   h+='</div></div>';
   return h;
 }
+var SITE={
+  /* Paste a Web3Forms or Formspree endpoint here and the form posts server-side
+     instead of opening the visitor's mail app. Blank = mailto fallback. */
+  endpoint:'',
+  email:'cody@hektiq.com'
+};
+function isDefault(){
+  return cfgState.base==='one'&&cfgState.extra===0&&
+    !Object.keys(cfgState.on).some(function(k){return cfgState.on[k];});
+}
+function clearBuild(){cfgState={base:'one',extra:0,on:{}};paintCfg();}
+function buildLines(){
+  var b=BASES.filter(function(x){return x.id===cfgState.base;})[0];
+  var rows=[[b.n,money(b.c)]];
+  if(cfgState.extra)rows.push([cfgState.extra+' extra page'+(cfgState.extra>1?'s':''),money(cfgState.extra*EXTRA_PAGE)]);
+  ADDONS.forEach(function(a){if(cfgState.on[a.id])rows.push([a.n,money(a.c)]);});
+  return rows;
+}
+function buildText(){
+  return 'BUILD\n'+buildLines().map(function(r){return '  '+r[0]+' - '+r[1];}).join('\n')+
+    '\n\n  Pages: '+pageCount()+'\n  Build total: '+money(total())+
+    '\n  Upkeep: '+(cfgState.on.chat?'Standard or Priority required (chat assistant)':'optional, from $99/mo');
+}
 function totalMarkup(){
   var n=pageCount();
   return '<span><span class="lbl">Build total</span><span class="sum">'+money(total())+'</span></span>'+
     '<span class="per">'+n+(n===1?' page':' pages')+
-    (cfgState.on.chat?'<br><b>Standard plan required</b>':'<br>Upkeep from <b>$99/mo</b>')+'</span>';
+    (cfgState.on.chat?'<br><b>Standard plan required</b>':'<br>Upkeep from <b>$99/mo</b>')+'</span>'+
+    '<span class="tbtns"><button class="tsend" data-mail>Email me this build</button>'+
+    '<button class="tclear" data-clear'+(isDefault()?' disabled':'')+'>Clear</button></span>';
 }
 function breakdownMarkup(){
   var b=BASES.filter(function(x){return x.id===cfgState.base;})[0];
@@ -490,6 +569,8 @@ function paintCfg(){
   describe();
 }
 document.addEventListener('click',function(e){
+  if(e.target.closest('[data-clear]')){clearBuild();return;}
+  if(e.target.closest('[data-mail]')){openMail();return;}
   var b=e.target.closest('[data-base]');
   if(b){cfgState.base=b.dataset.base;paintCfg();return;}
   var a=e.target.closest('[data-add]');
@@ -796,6 +877,77 @@ document.addEventListener('keydown',function(e){
 paintCfg();
 paintMkt();
 observeRise();
+
+/* ---------- email this build ---------- */
+var mail=document.getElementById('mail'),mailMsg=document.getElementById('mailMsg'),
+    mailForm=document.getElementById('mailForm'),lastFocus=null;
+
+function openMail(){
+  document.getElementById('recap').innerHTML='<dl style="margin:0">'+
+    buildLines().map(function(r){return '<div class="r"><dt>'+r[0]+'</dt><dd>'+r[1]+'</dd></div>';}).join('')+
+    '<div class="r rt"><dt>Total, '+pageCount()+(pageCount()===1?' page':' pages')+'</dt><dd>'+money(total())+'</dd></div></dl>';
+  var old=document.getElementById('sentBox');if(old)old.remove();
+  mailMsg.textContent='';mailMsg.className='msg2';
+  mailForm.hidden=false;
+  lastFocus=document.activeElement;
+  mail.hidden=false;
+  document.body.style.overflow='hidden';
+  setTimeout(function(){document.getElementById('fName2').focus();},40);
+}
+function closeMail(){
+  mail.hidden=true;document.body.style.overflow='';
+  if(lastFocus&&lastFocus.focus)lastFocus.focus();
+}
+document.getElementById('mailX').addEventListener('click',closeMail);
+document.getElementById('mailCancel').addEventListener('click',closeMail);
+mail.addEventListener('click',function(e){if(e.target===mail)closeMail();});
+
+function mailtoGo(p){
+  var body='Name: '+p.name+'\nBusiness: '+p.business+'\nEmail: '+p.email+
+    '\nPhone: '+p.phone+'\n\nNotes: '+p.note+'\n\n'+p.build;
+  location.href='mailto:'+SITE.email+'?subject='+
+    encodeURIComponent('Build enquiry - '+p.total)+'&body='+encodeURIComponent(body);
+}
+function showSent(viaApp){
+  mailForm.hidden=true;
+  document.getElementById('recap').insertAdjacentHTML('afterend',
+   '<div class="sentwrap" id="sentBox"><div class="tick">&#10003;</div><h3>'+
+   (viaApp?'Your mail app should be open':'Sent')+'</h3><p class="mlede">'+
+   (viaApp?'Hit send in there and it reaches me. If nothing opened, email '+SITE.email+' and paste the build above.'
+         :"Got it. I'll come back to you within a day, usually sooner.")+
+   '</p><button class="tclear" id="sentClose" style="border-radius:7px;padding:.7rem 1.4rem">Close</button></div>');
+  document.getElementById('sentClose').addEventListener('click',closeMail);
+}
+
+mailForm.addEventListener('submit',function(e){
+  e.preventDefault();
+  var name=document.getElementById('fName2').value.trim(),
+      email=document.getElementById('fEmail').value.trim();
+  if(!name){mailMsg.className='msg2 err';mailMsg.textContent='Your name, so I know who I am replying to.';
+    document.getElementById('fName2').focus();return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){
+    mailMsg.className='msg2 err';mailMsg.textContent='That email does not look right. Mind checking it?';
+    document.getElementById('fEmail').focus();return;}
+  var p={name:name,email:email,
+    business:document.getElementById('fBiz').value.trim()||'(not given)',
+    phone:document.getElementById('fPhone').value.trim()||'(not given)',
+    note:document.getElementById('fNote').value.trim()||'(none)',
+    total:money(total()),pages:String(pageCount()),build:buildText()};
+  if(!SITE.endpoint){mailtoGo(p);showSent(true);return;}
+  var btn=document.getElementById('mailSend');
+  btn.disabled=true;btn.textContent='Sending';
+  mailMsg.className='msg2';mailMsg.textContent='';
+  fetch(SITE.endpoint,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},
+    body:JSON.stringify(p)})
+   .then(function(r){if(!r.ok)throw 0;showSent(false);})
+   .catch(function(){
+     mailMsg.className='msg2 err';
+     mailMsg.textContent='That did not go through. Opening your mail app instead.';
+     setTimeout(function(){mailtoGo(p);showSent(true);},900);
+   })
+   .then(function(){btn.disabled=false;btn.textContent='Send it';});
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!mail.hidden)closeMail();});
 
 /* honest perf readout, measured not claimed */
 addEventListener('load',function(){
